@@ -1,8 +1,12 @@
 package com.project.code.Repo;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import com.project.code.Model.OrderItem;
 
-public interface OrderItemRepository {
+@Repository
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 // 1. Add the repository interface:
 //    - Extend JpaRepository<OrderItem, Long> to inherit basic CRUD functionality.
 //    - This allows the repository to perform operations like save, delete, update, and find without having to implement these methods manually.
