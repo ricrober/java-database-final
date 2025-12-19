@@ -1,5 +1,14 @@
 package com.project.code.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 @Entity
 public class OrderItem {
 
@@ -20,7 +29,7 @@ private Long id;
 //    - Apply @JsonManagedReference to manage bidirectional relationships and JSON serialization.
 
 @ManyToOne
-@JoinColumn(name = order_id)
+@JoinColumn(name = "order_id")
 @JsonManagedReference
 private OrderDetails order;
 
@@ -39,7 +48,7 @@ private Product product;
 //    - Type: private Integer
 //    - This field represents the quantity of the product in the order.
 
-private Integer quantity
+private Integer quantity;
 
 // 5. Add 'price' field:
 //    - Type: private Double
