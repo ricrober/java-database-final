@@ -36,7 +36,7 @@ private Long id;
 
 @ManyToOne
 @JoinColumn(name = "customer_id")
-@JsonBackReference("inventory-customer")
+@JsonBackReference("customer-order")
 private Customer customer;
 
 // 3. Add 'store' field:

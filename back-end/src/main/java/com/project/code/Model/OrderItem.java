@@ -1,5 +1,6 @@
 package com.project.code.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
@@ -30,7 +31,7 @@ private Long id;
 
 @ManyToOne
 @JoinColumn(name = "order_id")
-@JsonManagedReference
+@JsonBackReference
 private OrderDetails order;
 
 // 3. Add 'product' field:
@@ -41,7 +42,7 @@ private OrderDetails order;
 
 @ManyToOne
 @JoinColumn(name = "product_id")
-@JsonManagedReference
+@JsonBackReference
 private Product product;
 
 // 4. Add 'quantity' field:

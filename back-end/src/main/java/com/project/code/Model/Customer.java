@@ -67,11 +67,11 @@ public Customer() {};
 //    - Example: public String getName(), public void setName(String name)
 //    - Add getters and setters for 'email' and 'phone' fields as well.
 
-public long getId() {
+public Long getId() {
     return id;
 }
 
-public void setId(long id) {
+public void setId(Long id) {
     this.id = id;
 }
 
