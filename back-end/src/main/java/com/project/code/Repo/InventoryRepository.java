@@ -28,7 +28,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 // Example: public Inventory findByProductIdandStoreId(Long productId, Long storeId);
 
 @Query("SELECT i FROM Inventory i WHERE i.product.id = :productId AND i.store.id = :storeId")
-public Inventory findByProductIdandStoreId(Long productId, Long storeId);
+public Inventory findByProductIdAndStoreId(Long productId, Long storeId);
 
 //    - **findByStore_Id**:
 //      - This method will allow you to find a list of inventory records for a specific store.

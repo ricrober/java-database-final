@@ -68,6 +68,8 @@ public Product findByName(String name);
 //      - Parameters: Long storeId, String pname
 //      - Use @Query annotation to write a custom query.
 
+public Product findByid(Long id);
+
 @Query("SELECT i.product FROM Inventory i WHERE i.store.id = :storeId AND LOWER(i.product.name) LIKE LOWER(CONCAT('%', :pname, '%'))")
 public List<Product> findByNameLike(@Param("storeId") Long storeId, @Param("pname") String pname);
 
