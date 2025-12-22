@@ -57,7 +57,7 @@ private String phone;
     // Example: @JsonManagedReference
 @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 @JsonManagedReference
-private List<OrderItem> orders;
+private List<OrderDetails> orders;
 
 public Customer() {};
 
@@ -99,11 +99,11 @@ public void setPhone(String phone) {
     this.phone = phone;
 }
 
-public List<OrderItem> getOrders() {
+public List<OrderDetails> getOrders() {
     return orders;
 }
 
-public void setOrders(List<OrderItem> orders) {
+public void setOrders(List<OrderDetails> orders) {
     this.orders = orders;
 }
 
