@@ -1,5 +1,28 @@
 package com.project.code.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.code.Model.CombinedRequest;
+import com.project.code.Model.Inventory;
+import com.project.code.Model.Product;
+import com.project.code.Repo.InventoryRepository;
+import com.project.code.Repo.ProductRepository;
+import com.project.code.Service.ServiceClass;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+
+
+@RestController
+@RequestMapping("/inventory")
 public class InventoryController {
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to indicate that this is a REST controller, which handles HTTP requests and responses.
@@ -12,6 +35,14 @@ public class InventoryController {
 //      - `InventoryRepository` will handle CRUD operations related to the inventory.
 //      - `ServiceClass` will help with the validation logic (e.g., validating product IDs and inventory data).
 
+@Autowired
+private ProductRepository productRepository;
+
+@Autowired
+private InventoryRepository inventoryRepository;
+
+@Autowired
+private ServiceClass serviceClass;
 
 // 3. Define the `updateInventory` Method:
 //    - This method handles HTTP PUT requests to update inventory for a product.
@@ -19,11 +50,77 @@ public class InventoryController {
 //    - The product ID is validated, and if valid, the inventory is updated in the database.
 //    - If the inventory exists, update it and return a success message. If not, return a message indicating no data available.
 
+@PutMapping
+public Map<String, String> updateInventory(@RequestBody CombinedRequest request) {
+    Product product = request.getProduct();
+    Inventory inventory = request.getInventory();
+
+    Map<String, String> map = new HashMap<>();
+
+    System.out.println("Stock Level: " + inventory.getStockLevel());
+
+    if (!serviceClass.ValidateProductId(product.getId())) {
+        map.put("message", "Id " + product.getId() + " not present in database");
+        return map;
+    }
+
+    productRepository.save(product);
+
+    map.put("message", "Successfully updated product with id: " + product.getId());
+    
+    if (inventory != null) {
+        try {
+            Inventory result = serviceClass.getInventoryId(inventory);
+            if (result != null) {
+                inventory.setId(result.getId());
+                inventoryRepository.save(inventory);
+            } else {
+                map.put("message", "No data available for this product");
+                return map;
+            }
+        } catch (DataIntegrityViolationException e) {
+            map.put("message", "Error: " + e);
+            System.out.println(e);
+            return map;
+        } catch (Exception e) {
+            map.put("message", "Error: " + e);
+            System.out.println(e);
+            return map;
+        }
+    }
+
+    return map;
+}
 
 // 4. Define the `saveInventory` Method:
 //    - This method handles HTTP POST requests to save a new inventory entry.
 //    - It accepts an `Inventory` object in the request body.
 //    - It first validates whether the inventory already exists. If it exists, it returns a message stating so. If it doesn’t exist, it saves the inventory and returns a success message.
+
+@PostMapping
+public Map<String, String> saveInventory(@RequestBody Inventory inventory) {
+    Map<String, String> map = new HashMap<>();
+
+    try {
+        if (serviceClass.validateInventory(inventory)) {
+            inventoryRepository.save(inventory);
+        } else {
+            map.put("message", "Data already present in inventory");
+            return map;
+        }
+    } catch (DataIntegrityViolationException e) {
+        map.put("message", "Error: " + e);
+        System.out.println(e);
+        return map;
+    } catch (Exception e) {
+        map.put("message", "Error: " + e);
+        System.out.println(e);
+        return map;
+    }
+
+    map.put(("message"), "Product added to inventory successfully");
+    return map;
+}
 
 
 // 5. Define the `getAllProducts` Method:
