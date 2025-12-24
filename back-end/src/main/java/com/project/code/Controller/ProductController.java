@@ -1,6 +1,7 @@
 package com.project.code.Controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,9 @@ import com.project.code.Repo.ProductRepository;
 import com.project.code.Service.ServiceClass;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -115,18 +116,52 @@ public Map<String, String> updateProduct(@RequestBody Product product) {
 //    - Fetch products based on category using methods like `findByCategory()` or `findProductBySubNameAndCategory()`.
 //    - Return filtered products in a `Map<String, Object>` with key `products`.
 
+@GetMapping("/category/{name}/{category}")
+public Map<String, Object> filterByCategoryProduct(@PathVariable String name, @PathVariable String category) {
+    Map<String, Object> map = new HashMap<>();
+
+    if (name.equals("null")) {
+        map.put("products", productRepository.findByCategory(category));
+        return map;
+    } else if (category.equals("null")) {
+        map.put("products", productRepository.findProductBySubNameAndCategory(name, category));
+        return map;
+    }
+
+    map.put("products", productRepository.findProductBySubName(name));
+
+    return map;
+}
 
  // 7. Define the `listProduct` Method:
 //    - Annotate with `@GetMapping` to handle GET requests to fetch all products.
 //    - Fetch all products using `findAll()` method from `ProductRepository`.
 //    - Return all products in a `Map<String, Object>` with key `products`.
 
+@GetMapping
+public Map<String, Object>  listProduct() {
+    Map<String, Object> map = new HashMap<>();
+
+    map.put("products", productRepository.findAll());
+
+    return map;
+}
 
 // 8. Define the `getProductbyCategoryAndStoreId` Method:
 //    - Annotate with `@GetMapping("filter/{category}/{storeid}")` to filter products by `category` and `storeId`.
 //    - Use `findProductByCategory()` method from `ProductRepository` to retrieve products.
 //    - Return filtered products in a `Map<String, Object>` with key `product`.
 
+@GetMapping("filter/{category}/{storeId}")
+public Map<String, Object> getProductByCategoryAndStoreId(@PathVariable String category, @PathVariable Long storeId) {
+    Map<String, Object> map = new HashMap<>();
+
+    List<Product> result = productRepository.findProductByCategory(category, storeId);
+
+    map.put("product", result);
+
+    return map;
+}
 
 // 9. Define the `deleteProduct` Method:
 //    - Annotate with `@DeleteMapping("/{id}")` to handle DELETE requests for removing a product by its ID.
@@ -135,13 +170,36 @@ public Map<String, String> updateProduct(@RequestBody Product product) {
 //    - Remove product from `Product` using `deleteById(id)` in `ProductRepository`.
 //    - Return a success message with key `message` indicating product deletion.
 
+@DeleteMapping("/{id}")
+public Map<String, String> deleteProduct(@PathVariable Long id) {
+    Map<String, String> map = new HashMap<>();
+
+    if (!serviceClass.ValidateProductId(id)) {
+        map.put("message", "Id " + id + " not present in database");
+        return map;
+    }
+
+    inventoryRepository.deleteByProductId(id);
+    productRepository.deleteById(id);
+
+    map.put("message", "Deleted product successfully with id: " + id);
+
+    return map;
+}
 
  // 10. Define the `searchProduct` Method:
 //    - Annotate with `@GetMapping("/searchProduct/{name}")` to search for products by `name`.
 //    - Use `findProductBySubName()` method from `ProductRepository` to search products by name.
 //    - Return search results in a `Map<String, Object>` with key `products`.
 
-
-  
+@GetMapping("/searchProduct/{name}")
+public Map<String, Object> searchProduct(@PathVariable String name) {
+    Map<String, Object> map = new HashMap<>();
     
+    map.put("products", productRepository.findProductBySubName(name));
+
+    return map;
+}
+
+     
 }
