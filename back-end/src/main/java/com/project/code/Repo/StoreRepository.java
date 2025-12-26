@@ -25,6 +25,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 
 // Example: public Store findById(Long id);
 
+public Store findByid(Long id);
+
 //public Store findById(Long id);
 
 //    - **findBySubName**:
