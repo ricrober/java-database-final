@@ -55,7 +55,7 @@ private String phone;
 
     // Example: @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     // Example: @JsonManagedReference
-@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 @JsonManagedReference
 private List<OrderDetails> orders;
 

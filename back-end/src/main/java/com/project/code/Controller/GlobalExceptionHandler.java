@@ -3,6 +3,7 @@ package com.project.code.Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,26 @@ public Map<String, Object> handleJsonParseExeption(HttpMessageNotReadableExcepti
     Map<String, Object> map = new HashMap<>();
 
     map.put("message", "Invalid input: The data provided is not valid.");
+
+    return map;
+}
+
+@ExceptionHandler(DataIntegrityViolationException.class)
+@ResponseStatus(HttpStatus.CONFLICT)
+public Map<String, String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    Map<String, String> map = new HashMap<>();
+
+    map.put("message", ex.getMessage());
+
+    return map;
+}
+
+@ExceptionHandler(Exception.class)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public Map<String, String> handleGeneralException(Exception ex) {
+    Map<String, String> map = new HashMap<>();
+
+    map.put("message", ex.getMessage());
 
     return map;
 }

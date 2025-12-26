@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -60,6 +61,7 @@ private Double totalPrice;
 //    - Type: private LocalDateTime
 //    - This field represents the date and time when the order was placed.
 
+@Column(name = "date")
 private LocalDateTime date;
 
 // 6. Add 'orderItems' field:

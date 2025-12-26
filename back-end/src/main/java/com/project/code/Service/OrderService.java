@@ -93,8 +93,12 @@ public void saveOrder(PlaceOrderRequestDTO placeOrderRequest) {
 
         Inventory inventory = inventoryRepository.findByProductIdAndStoreId(productDTO.getId(), placeOrderRequest.getStoreId());
 
-        inventory.setStockLevel(inventory.getStockLevel() - productDTO.getQuantity());
-        inventoryRepository.save(inventory);
+        if (inventory.getStockLevel() >= productDTO.getQuantity()) {
+            inventory.setStockLevel(inventory.getStockLevel() - productDTO.getQuantity());
+            inventoryRepository.save(inventory);
+        } else {
+            break;
+        }
 
         orderItem.setOrder(orderDetails);
 

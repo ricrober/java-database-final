@@ -11,12 +11,13 @@ import com.project.code.Model.PlaceOrderRequestDTO;
 import com.project.code.Model.Store;
 import com.project.code.Repo.StoreRepository;
 import com.project.code.Service.OrderService;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 
 @RestController
@@ -73,14 +74,16 @@ public boolean validateStore(@PathVariable Long storeId) {
 //    - Return an error message with key `Error` if there is an issue processing the order.
 
 @PostMapping("/placeOrder")
-public Map<String, String> placeOrderMap(@RequestBody PlaceOrderRequestDTO placeOrderRequest) {
+public Map<String, String> placeOrderMap(@RequestBody PlaceOrderRequestDTO placeOrderRequest, HttpServletResponse response) {
     Map<String, String> map = new HashMap<>();
 
     try {
         orderService.saveOrder(placeOrderRequest);
         map.put("message", "Order placed successfully");
+        response.setStatus(HttpServletResponse.SC_CREATED);
     } catch(Error e) {
         map.put("Error", "" + e);
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     return map;

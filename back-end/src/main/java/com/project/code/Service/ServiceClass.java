@@ -28,12 +28,7 @@ public class ServiceClass {
 
 public boolean validateInventory(Inventory inventory) {
     Inventory result = inventoryRepository.findByProductIdAndStoreId(inventory.getProduct().getId(), inventory.getStore().getId());
-
-    if (result != null) {
-        return false;
-    }
-
-    return true;
+    return result == null;
 }
 
 // 2. **validateProduct Method**:
@@ -43,12 +38,7 @@ public boolean validateInventory(Inventory inventory) {
 
 public boolean validateProduct(Product product) {
     Product result = productRepository.findByName(product.getName());
-
-    if (result != null) {
-        return false;
-    }
-
-    return true;
+    return result == null;
 }
 
 // 3. **ValidateProductId Method**:
@@ -59,12 +49,7 @@ public boolean validateProduct(Product product) {
 public boolean ValidateProductId(Long id) {
     Product result = productRepository.findByid(id);
     System.out.println(result);
-
-    if (result == null) {
-        return false;
-    }
-
-    return true;
+    return result != null;
 }
 
 // 4. **getInventoryId Method**:

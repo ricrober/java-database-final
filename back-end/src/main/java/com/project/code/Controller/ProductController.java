@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +14,9 @@ import com.project.code.Model.Product;
 import com.project.code.Repo.InventoryRepository;
 import com.project.code.Repo.ProductRepository;
 import com.project.code.Service.ServiceClass;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,19 +57,22 @@ private InventoryRepository inventoryRepository;
 //    - Catch exceptions (e.g., `DataIntegrityViolationException`) and return appropriate error message.
 
 @PostMapping
-public Map<String, String> addProduct(@RequestBody Product product) {
+public Map<String, String> addProduct(@RequestBody Product product, HttpServletResponse response) {
     Map<String, String> map = new HashMap<>();
 
     if (!serviceClass.validateProduct(product)) {
         map.put("message", "Product already present in database");
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
         return map;
     }
 
     try {
         productRepository.save(product);
         map.put("message", "Product added successfully");
+        response.setStatus(HttpServletResponse.SC_CREATED);
     } catch (DataIntegrityViolationException e) {
         map.put("message", "SKU should be unique");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
 
     return map;
@@ -78,12 +85,16 @@ public Map<String, String> addProduct(@RequestBody Product product) {
 //    - Return the product in a `Map<String, Object>` with key `products`.
 
 @GetMapping("/product/{id}")
-public Map<String, Object> getProductById(@PathVariable Long id) {
+public Map<String, Object> getProductById(@PathVariable Long id, HttpServletResponse response) {
     Map<String, Object> map = new HashMap<>();
 
     Product result = productRepository.findByid(id);
 
-    System.out.println("result: " + result);
+    if (result == null) {
+        map.put("message", "Product not found with id: " + id);
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return map;
+    }
 
     map.put("products", result);
 
@@ -171,6 +182,7 @@ public Map<String, Object> getProductByCategoryAndStoreId(@PathVariable String c
 //    - Return a success message with key `message` indicating product deletion.
 
 @DeleteMapping("/{id}")
+@Transactional
 public Map<String, String> deleteProduct(@PathVariable Long id) {
     Map<String, String> map = new HashMap<>();
 

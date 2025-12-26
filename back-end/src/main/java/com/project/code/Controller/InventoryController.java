@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +14,9 @@ import com.project.code.Model.Product;
 import com.project.code.Repo.InventoryRepository;
 import com.project.code.Repo.ProductRepository;
 import com.project.code.Service.ServiceClass;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,8 +55,10 @@ private ServiceClass serviceClass;
 //    - The product ID is validated, and if valid, the inventory is updated in the database.
 //    - If the inventory exists, update it and return a success message. If not, return a message indicating no data available.
 
+// Exceptions are managed by the global exception handler
+
 @PutMapping
-public Map<String, String> updateInventory(@RequestBody CombinedRequest request) {
+public Map<String, String> updateInventory(@RequestBody CombinedRequest request, HttpServletResponse response) {
     Product product = request.getProduct();
     Inventory inventory = request.getInventory();
 
@@ -64,6 +68,7 @@ public Map<String, String> updateInventory(@RequestBody CombinedRequest request)
 
     if (!serviceClass.ValidateProductId(product.getId())) {
         map.put("message", "Id " + product.getId() + " not present in database");
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return map;
     }
 
@@ -72,26 +77,19 @@ public Map<String, String> updateInventory(@RequestBody CombinedRequest request)
     map.put("message", "Successfully updated product with id: " + product.getId());
     
     if (inventory != null) {
-        try {
-            Inventory result = serviceClass.getInventoryId(inventory);
-            if (result != null) {
-                inventory.setId(result.getId());
-                inventoryRepository.save(inventory);
-            } else {
-                map.put("message", "No data available for this product");
-                return map;
-            }
-        } catch (DataIntegrityViolationException e) {
-            map.put("message", "Error: " + e);
-            System.out.println(e);
-            return map;
-        } catch (Exception e) {
-            map.put("message", "Error: " + e);
-            System.out.println(e);
+        Inventory result = serviceClass.getInventoryId(inventory);
+        if (result != null) {
+            inventory.setId(result.getId());
+            inventoryRepository.save(inventory);
+
+        } else {
+            map.put("message", "No data available for this product");
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             return map;
         }
     }
 
+    response.setStatus(HttpServletResponse.SC_OK);
     return map;
 }
 
@@ -101,27 +99,19 @@ public Map<String, String> updateInventory(@RequestBody CombinedRequest request)
 //    - It first validates whether the inventory already exists. If it exists, it returns a message stating so. If it doesn’t exist, it saves the inventory and returns a success message.
 
 @PostMapping
-public Map<String, String> saveInventory(@RequestBody Inventory inventory) {
+public Map<String, String> saveInventory(@RequestBody Inventory inventory, HttpServletResponse response) {
     Map<String, String> map = new HashMap<>();
 
-    try {
-        if (serviceClass.validateInventory(inventory)) {
-            inventoryRepository.save(inventory);
-        } else {
-            map.put("message", "Data already present in inventory");
-            return map;
-        }
-    } catch (DataIntegrityViolationException e) {
-        map.put("message", "Error: " + e);
-        System.out.println(e);
-        return map;
-    } catch (Exception e) {
-        map.put("message", "Error: " + e);
-        System.out.println(e);
+    if (serviceClass.validateInventory(inventory)) {
+        inventoryRepository.save(inventory);
+    } else {
+        map.put("message", "Data already present in inventory");
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
         return map;
     }
 
     map.put(("message"), "Product added to inventory successfully");
+    response.setStatus(HttpServletResponse.SC_CREATED);
     return map;
 }
 
@@ -172,10 +162,10 @@ public Map<String, Object> getProductName(
 //    - The search results are returned in the response with the key `"product"`.
 
 @GetMapping("search/{name}/{storeId}")
-public Map<String, Object> searchProduct(@PathVariable String name, @PathVariable Long storeid) {
+public Map<String, Object> searchProduct(@PathVariable String name, @PathVariable Long storeId) {
     Map<String, Object> map = new HashMap<>();
 
-    map.put("product", productRepository.findByNameLike(storeid, name));
+    map.put("product", productRepository.findByNameLike(storeId, name));
 
     return map;
 }
@@ -186,15 +176,17 @@ public Map<String, Object> searchProduct(@PathVariable String name, @PathVariabl
 //    - Returns a success message with the key `"message"` indicating successful deletion.
 
 @DeleteMapping("/{id}")
-public Map<String, String> removeProduct(@PathVariable Long id) {
+public Map<String, String> removeProduct(@PathVariable Long id, HttpServletResponse response) {
     Map<String, String> map = new HashMap<>();
 
     if (!serviceClass.ValidateProductId(id)) {
         map.put("message", "Id " + id + " not present in database");
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return map;
     }
 
     inventoryRepository.deleteByProductId(id);
+    response.setStatus(HttpServletResponse.SC_OK);
     map.put("message", "Deleted product successfully with id: " + id);
 
     return map;
