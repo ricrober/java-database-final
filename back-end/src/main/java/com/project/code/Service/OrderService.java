@@ -83,10 +83,6 @@ public void saveOrder(PlaceOrderRequestDTO placeOrderRequest) {
 
     orderDetails = orderDetailsRepository.save(orderDetails);
 
-    // 5. **Create and Save OrderItems**:
-    //    - For each product purchased, find the corresponding inventory, update stock levels, and save the changes using `inventoryRepository.save()`.
-    //    - Create and save `OrderItem` for each product and associate it with the `OrderDetails` using `orderItemRepository.save()`.
-
     List<PurchaseProductDTO> purchaseProducts = placeOrderRequest.getPurchaseProduct();
     for (PurchaseProductDTO productDTO : purchaseProducts) {
         OrderItem orderItem = new OrderItem();
