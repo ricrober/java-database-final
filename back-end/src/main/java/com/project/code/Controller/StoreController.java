@@ -47,7 +47,7 @@ public class StoreController {
     }
 
     /**
-     * Checks i a store exists in the database.
+     * Checks if a store exists in the database.
      * @param storeId The unique identifier of the store.
      * @return True if the store exists, false otherwise.
      */
@@ -71,7 +71,7 @@ public class StoreController {
             map.put("message", "Order placed successfully");
             response.setStatus(HttpServletResponse.SC_CREATED);
         } catch(Exception e) {
-            map.put("Error", "An error occurred: " + e.getMessage());
+            map.put("Error", "Could not place order: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 

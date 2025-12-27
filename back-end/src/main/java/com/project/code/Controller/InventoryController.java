@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.code.Model.CombinedRequest;
@@ -64,7 +65,7 @@ public class InventoryController {
 
         System.out.println("Stock Level: " + inventory.getStockLevel());
 
-        if (!serviceClass.ValidateProductId(product.getId())) {
+        if (!serviceClass.validateProductId(product.getId())) {
             map.put("message", "Id " + product.getId() + " not present in database");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return map;
@@ -146,16 +147,16 @@ public class InventoryController {
      */
     @GetMapping("filter/{category}/{name}/{storeid}")
     public Map<String, Object> getProductName(
-        @PathVariable String category,
-        @PathVariable String name,
-        @PathVariable Long storeid
+        @PathVariable Long storeid,
+        @RequestParam String category,
+        @RequestParam String name        
     ) {
         Map<String, Object> map = new HashMap<>();
 
-        if (category.equals("null")) {
+        if (category == null) {
             map.put("product", productRepository.findByNameLike(storeid, name));
             return map;
-        } else if (name.equals("null")) {
+        } else if (name == null) {
             System.out.println("name is null");
             map.put("product", productRepository.findByCategoryAndStoreId(storeid, category));
             return map;
@@ -192,7 +193,7 @@ public class InventoryController {
     public Map<String, String> removeProduct(@PathVariable Long id, HttpServletResponse response) {
         Map<String, String> map = new HashMap<>();
 
-        if (!serviceClass.ValidateProductId(id)) {
+        if (!serviceClass.validateProductId(id)) {
             map.put("message", "Id " + id + " not present in database");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return map;
@@ -219,7 +220,7 @@ public class InventoryController {
         @PathVariable Long storeId,
         @PathVariable Long productId
     ) {
-        //Inventory result = inventoryRepository.findByProductIdAndStoreId(productId, storeId);
+        // Inventory result = inventoryRepository.findByProductIdAndStoreId(productId, storeId);
         // This logic was moved to InventoryService
         return inventoryService.checkStockAvailability() >= quantity;
     }

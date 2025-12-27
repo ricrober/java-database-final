@@ -49,7 +49,7 @@ public class Customer {
     /**
      * Default constructor required by JPA.
      */
-    public Customer() {};
+    public Customer() {}
 
     /**
      * Getter for Customer ID.

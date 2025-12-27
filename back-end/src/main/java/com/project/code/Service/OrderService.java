@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.project.code.Model.Customer;
 import com.project.code.Model.Inventory;
@@ -55,9 +56,10 @@ public class OrderService {
      * @param placeOrderRequest DTO containing customer info, store ID, and products.
      * @throws RuntimeException if the store is not found or inventory is insufficient.
      */
+    @Transactional
     public void saveOrder(PlaceOrderRequestDTO placeOrderRequest) {
 
-        Customer customer = getOrCreaCustomer(placeOrderRequest);
+        Customer customer = getOrCreateCustomer(placeOrderRequest);
 
         Store store = storeRepository.findById(
             placeOrderRequest.getStoreId()
@@ -77,7 +79,7 @@ public class OrderService {
      * @param request The {@link PlaceOrderRequestDTO}.
      * @return The existing Customer or the new one created.
      */
-    private Customer getOrCreaCustomer(PlaceOrderRequestDTO request) {
+    private Customer getOrCreateCustomer(PlaceOrderRequestDTO request) {
         Customer existing = customerRepository.findByEmail(request.getCustomerEmail());
 
         if (existing != null) {
@@ -90,7 +92,7 @@ public class OrderService {
         newCustomer.setEmail(request.getCustomerEmail());
         newCustomer.setPhone(request.getCustomerPhone());
 
-        return newCustomer;
+        return customerRepository.save(newCustomer);
     }
 
 

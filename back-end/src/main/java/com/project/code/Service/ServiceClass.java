@@ -2,7 +2,6 @@ package com.project.code.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.project.code.CodeApplication;
 import com.project.code.Model.Inventory;
 import com.project.code.Model.Product;
 import com.project.code.Repo.InventoryRepository;
@@ -14,8 +13,6 @@ import com.project.code.Repo.ProductRepository;
  */
 @Service
 public class ServiceClass {
-
-    private final CodeApplication codeApplication;
     @Autowired
     private final ProductRepository productRepository;
 
@@ -27,10 +24,9 @@ public class ServiceClass {
      * @param inventoryRepository The repository for inventory data access.
      * @param productRepository The repository for product data access. 
      */
-    public ServiceClass(InventoryRepository inventoryRepository, ProductRepository productRepository, CodeApplication codeApplication) {
+    public ServiceClass(InventoryRepository inventoryRepository, ProductRepository productRepository) {
         this.inventoryRepository = inventoryRepository;
         this.productRepository = productRepository;
-        this.codeApplication = codeApplication;
     }
 
     /**
@@ -69,8 +65,8 @@ public class ServiceClass {
 
     /**
      * Validates if a product exists based on its Id.
-     * @param id
-     * @return
+     * @param id The ID of the product to validate.
+     * @return true if the product is valid, false otherwise.
      */
     public boolean validateProductId(Long id) {
         //Product result = productRepository.findByid(id);
