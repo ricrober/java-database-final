@@ -13,65 +13,122 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Represents a Customer within the system.
+ * <p>
+ * This entity stores Customer's information and maintains a 
+ * one-to-many relationship with {@link OrderDetails}.
+ * </p>
+ */
 @Entity
 public class Customer {
 
-@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
+    /** Unique Identifier for the Customer. */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-@NotNull(message = "Name cannot be null")
-private String name;
+    /** The name of the Customer. Must not be null. */
+    @NotNull(message = "Name cannot be null")
+    private String name;
 
-@NotNull(message = "Email cannot be null")
-private String email;
+    /** The email address of the Customer. Must not be null. */
+    @NotNull(message = "Email cannot be null")
+    private String email;
 
-@NotNull(message = "Phone cannot be null")
-private String phone;
+    /** The phone number of the Customer. Must not be null. */
+    @NotNull(message = "Phone cannot be null")
+    private String phone;
 
-@OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-@JsonManagedReference
-private List<OrderDetails> orders;
+    /** The list of orders associated with the Customer.
+     *  Mapped by the "customer" field in the OrderDetails entity.
+     */
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<OrderDetails> orders;
 
-public Customer() {};
+    /**
+     * Default constructor required by JPA.
+     */
+    public Customer() {};
 
-public Long getId() {
-    return id;
-}
+    /**
+     * Getter for Customer ID.
+     * @return The generated ID of this Customer.
+     */
+    public Long getId() {
+        return id;
+    }
 
-public void setId(Long id) {
-    this.id = id;
-}
+    /**
+     * Setter for Customer ID.
+     * @param id The ID to set for this Customer.
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-public String getName() {
-    return name;
-}
+    /**
+     * Getter for Customer name.
+     * @return The name of this Customer.
+     */
+    public String getName() {
+        return name;
+    }
 
-public void setName(String name) {
-    this.name = name;
-}
+    /**
+     * Setter for Customer name.
+     * @param name The name to set for this Customer.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-public String getEmail() {
-    return email;
-}
+    /**
+     * Getter for Customer email.
+     * @return The email of this Customer.
+     */
+    public String getEmail() {
+        return email;
+    }
 
-public void setEmail(String email) {
-    this.email = email;
-}
+    /**
+     * Setter for Customer email.
+     * @param email The email to set for this Customer.
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-public String getPhone() {
-    return phone;
-}
+    /**
+     * Getter for Customer phone number.
+     * @return The phone number of this Customer.
+     */
+    public String getPhone() {
+        return phone;
+    }
 
-public void setPhone(String phone) {
-    this.phone = phone;
-}
+    /**
+     * Setter for Customer phone number.
+     * @param phone The phone number to set for this Customer
+     */
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-public List<OrderDetails> getOrders() {
-    return orders;
-}
+    /**
+     * Retrieves all orders linked to this Customer.
+     * @return A list of {@link OrderDetails}
+     */
+    public List<OrderDetails> getOrders() {
+        return orders;
+    }
 
-public void setOrders(List<OrderDetails> orders) {
-    this.orders = orders;
-}
+    /**
+     * Associates a list of {@link OrderDetails} with this Customer.
+     * @param orders The list of {@link OrderDetails} to link to this Customer.
+     */
+    public void setOrders(List<OrderDetails> orders) {
+        this.orders = orders;
+    }
 
 }
